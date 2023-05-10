@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <!-- Hola si ves esto ctm -->
+  <title>Reservar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      font-family: "Libre Baskerville", serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 30px;
+    background-color: #0c0f157a;
+    overflow-x:hidden;
+    color: #d8d7d7; }
+
+
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .current {
+      background-color: yellow;
+    }
+    .disabled {
+      background-color: rgba(129, 23, 23, 0.538);
+      cursor: default;
+    }
+    .selected {
+      background-color: green;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Reservar</h1>
+  <h2 id="currentDateTime"></h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Domingo</th>
+        <th>Lunes</th>
+        <th>Martes</th>
+        <th>Miércoles</th>
+        <th>Jueves</th>
+        <th>Viernes</th>
+        <th>Sábado</th>
+      </tr>
+    </thead>
+    <tbody id="calendarBody"></tbody>
+  </table>
+  <br>
+  <input type="text" id="name">
+  <br><br>
+  <button id="reserveButton" disabled>Reservar</button>
+
+  <script>
+    var selectedCell = null;//pa inicializar 
+
+    // obtener la fecha y hora actual
+    function getCurrentDateTime() {
+      var now = new Date();
+      var day = now.getDate();
+      var month = now.getMonth() + 1;
+      var year = now.getFullYear();
+      var hour = now.getHours();
+      var minute = now.getMinutes();
+      var second = now.getSeconds();
+      return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+    }
+
+    //crear el calendario del mes actual
+    function createCalendar() {
+      var calendarBody = document.getElementById('calendarBody');
+      var today = new Date();
+      var currentMonth = today.getMonth();
+      var currentYear = today.getFullYear();
+      var date = new Date(currentYear, currentMonth, 1);
+      var row = document.createElement('tr');
+      var cellCount = 0;
+
+      while (date.getMonth() === currentMonth) {
+        var cell = document.createElement('td');
+        cell.textContent = date.getDate();
+        if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth()) {
+          cell.classList.add('current');
+        }
+        if (date < today) {
+          cell.classList.add('disabled');
+        } else {
+          cell.addEventListener('click', selectCell);
+        }
+        row.appendChild(cell);
+        date.setDate(date.getDate() + 1);
+        cellCount++;
+
+        if (cellCount % 7 === 0) {
+          calendarBody.appendChild(row);
+          row = document.createElement('tr');
+        }
+      }
+
+      if (cellCount % 7 !== 0) {
+        calendarBody.appendChild(row);
+      }
+    }
+    //pa actualizar la fecha y hora
+    function updateDateTime() {
+      var currentDateTime = document.getElementById('currentDateTime');
+      currentDateTime.textContent = getCurrentDateTime();
+    }
+        function updateReserveButton() {
+      var reserveButton = document.getElementById('reserveButton');
+      var today = new Date();
+      var cells = document.getElementsByTagName('td');
+      var disabledCells = [];
+
+      for (var i = 0; i < cells.length; i++) {
+        if (cells[i].classList.contains('disabled')) {
+          disabledCells.push(cells[i]);
+        }
+      }
+
+      // Activar o desactivar el botón de reservar
+      if (disabledCells.length > 0 || selectedCell === null) {
+        reserveButton.disabled = true;
+      } else {
+        reserveButton.disabled = false;
+      }
+    }
+
+    //seleccionar una celdae
+    function selectCell(event) {
+      var selectedDate = event.target.textContent;
+      var cells = document.getElementsByTagName('td');
+      if (selectedCell !== null) {
+        selectedCell.classList.remove('selected');
+      }
+
+      // Asignar la nueva celda seleccionada
+      selectedCell = event.target;
+      selectedCell.classList.add('selected');
+      // Actualizar el botón de reserva
+      updateReserveButton();
+    }
+
+    // intento de  guardar la reserva en local stora
+    function saveReservation() {
+      var name = document.getElementById('name').value;
+      var reservation = {
+        name: name,
+        dateTime: getCurrentDateTime()
+      };
+      localStorage.setItem('reservation', JSON.stringify(reservation));
+      alert('Reserva realizada con éxito');
+    }
+//mostrar
+    createCalendar();
+    updateDateTime();
+
+    updateReserveButton();
+
+//posibles cambios
+    var nameInput = document.getElementById('name');
+    nameInput.addEventListener('input', updateReserveButton);
+
+    var reserveButton = document.getElementById('reserveButton');
+    reserveButton.addEventListener('click', saveReservation);
+  </script>
+</body>
+</html>

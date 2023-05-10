@@ -1,0 +1,25 @@
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .current {
+      background-color: yellow;
+    }
+    .disabled {
+      background-color: lightgray;
+      cursor: default;
+    }
+    .selected {
+      background-color: green;
+      color: white;
+    }
