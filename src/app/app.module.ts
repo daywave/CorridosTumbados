@@ -5,12 +5,14 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AgendarComponent } from './agendar/agendar.component';
 import { NosotrosComponent } from './nosotros/nosotros.component';
+import { MapaComponent } from './mapa/mapa.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AgendarComponent,
-    NosotrosComponent
+    NosotrosComponent,
+    MapaComponent
   ],
   imports: [
     BrowserModule,
