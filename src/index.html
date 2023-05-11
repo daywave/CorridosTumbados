@@ -7,6 +7,10 @@
       href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/AlertifyJS/1.13.1/css/alertify.min.css"
+    />
 
     <title>Reservar</title>
     <style>
@@ -16,7 +20,7 @@
         font-weight: 400;
         font-size: 16px;
         line-height: 30px;
-        background-color: #0c0f15f9;
+        background-color: #0c0f15;
         overflow-x: hidden;
         color: #d8d7d7;
       }
@@ -45,8 +49,7 @@
     </style>
   </head>
   <body>
-    <app-root></app-root>
-    <h1>Reserva con nosotros:</h1>
+    <h1>Reservar</h1>
     <h2 id="currentDateTime"></h2>
     <table>
       <thead>
@@ -199,8 +202,13 @@
         var name = document.getElementById("name").value;
         var dateTime = selectedDateCell.textContent + " " + selectedTime;
 
-        if (reservedTimes.includes(dateTime)) {
-          alert(
+        var reservedIndex = reservedTimes.findIndex(function (reservedTime) {
+          return reservedTime.dateTime === dateTime;
+        });
+
+        if (reservedIndex !== -1) {
+          alertify.alert(
+            "Reserva existente",
             "Este horario ya ha sido reservado. Por favor, seleccione otro horario."
           );
           return;
@@ -217,12 +225,17 @@
           reservationList = JSON.parse(storedReservationList);
         }
         reservationList.push(reservation);
-        localStorage.setItem("reservationList", JSON.stringify(reservationList));
+        localStorage.setItem(
+          "reservationList",
+          JSON.stringify(reservationList)
+        );
 
-        reservedTimes.push(dateTime);
+        reservedTimes.push(reservation);
 
-        alert("Reserva realizada con éxito");
+        alertify.alert("Reserva realizada", "Reserva realizada con éxito");
       }
+
+      /*  */
 
       function getAvailableTimes(selectedDate) {
         var availableTimes = [];
@@ -236,6 +249,7 @@
 
         return availableTimes;
       }
+      /*  */
 
       createCalendar();
       updateDateTime();
@@ -264,7 +278,43 @@
 
       saveReservationButton.addEventListener("click", saveReservation);
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/AlertifyJS/1.13.1/alertify.min.js"></script>
   </body>
 </html>
 
-
+<!-- ESTO IMPRIME LA LISTA DE RESERVAS DEL LOCAL STORAGE-->
+<!--   <script>
+      function printReservationReport() {
+  var reservationList = localStorage.getItem("reservationList");
+  if (!reservationList) {
+    document.write("No hay reservaciones almacenadas.");
+    return;
+  }
+  
+  reservationList = JSON.parse(reservationList);
+  
+  var reportDiv = document.createElement("div");
+  reportDiv.innerHTML = "<h3>Reporte de Reservaciones</h3>";
+  
+  for (var i = 0; i < reservationList.length; i++) {
+    var reservation = reservationList[i];
+    var reservationInfo = document.createElement("p");
+    reservationInfo.innerHTML =
+      "<strong>Reservación #" +
+      (i + 1) +
+      "</strong><br>" +
+      "Nombre: " +
+      reservation.name +
+      "<br>" +
+      "Fecha y Hora: " +
+      reservation.dateTime +
+      "<br><br>";
+    reportDiv.appendChild(reservationInfo);
+  }
+  
+  document.body.appendChild(reportDiv);
+  }
+  
+  printReservationReport();
+  
+    </script>     -->
