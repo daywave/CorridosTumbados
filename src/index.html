@@ -1,19 +1,269 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>AAproyecto</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-</head>
-<body>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <app-root></app-root>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200&display=swap"
+      rel="stylesheet"
+    />
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</body>
+    <title>Reservar</title>
+    <style>
+      body {
+        font-family: "Tajawal", sans-serif;
+        text-align: center;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 30px;
+        background-color: #0c0f15;
+        overflow-x: hidden;
+        color: #d8d7d7;
+      }
+
+      table {
+        margin: 0 auto;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+      .current {
+        background-color: yellow;
+      }
+      .disabled {
+        background-color: rgba(129, 23, 23, 0.538);
+        cursor: default;
+      }
+      .selected {
+        background-color: green;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reservar</h1>
+    <h2 id="currentDateTime"></h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Domingo</th>
+          <th>Lunes</th>
+          <th>Martes</th>
+          <th>Miércoles</th>
+          <th>Jueves</th>
+          <th>Viernes</th>
+          <th>Sábado</th>
+        </tr>
+      </thead>
+      <tbody id="calendarBody"></tbody>
+    </table>
+    <br />
+    <input placeholder="Nombre" type="text" id="name" />
+    <input placeholder="Teléfono" type="text" id="phone" />
+    <input placeholder="Correo" type="text" id="email" />
+    <br /><br />
+    <select id="time" disabled>
+      <option value="" selected disabled>Seleccione una hora</option>
+    </select>
+    <br /><br />
+    <button id="selectDateButton" disabled>Seleccionar</button>
+    <button id="reserveButton" disabled>Reservar</button>
+
+    <script>
+      var selectedDateCell = null;
+      var selectedTime = null;
+      var reservedTimes = [];
+
+      function getCurrentDateTime() {
+        var now = new Date();
+        var day = now.getDate();
+        var month = now.getMonth() + 1;
+        var year = now.getFullYear();
+        var hour = now.getHours();
+        var minute = now.getMinutes();
+        var second = now.getSeconds();
+        return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+      }
+
+      function createCalendar() {
+        var calendarBody = document.getElementById("calendarBody");
+        var today = new Date();
+        var currentMonth = today.getMonth();
+        var currentYear = today.getFullYear();
+        var date = new Date(currentYear, currentMonth, 1);
+        var row = document.createElement("tr");
+        var cellCount = 0;
+
+        for (var i = 0; i < date.getDay(); i++) {
+          var emptyCell = document.createElement("td");
+          emptyCell.classList.add("disabled");
+          row.appendChild(emptyCell);
+          cellCount++;
+        }
+        while (date.getMonth() === currentMonth) {
+          var cell = document.createElement("td");
+          cell.textContent = date.getDate();
+          if (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth()
+          ) {
+            cell.classList.add("current");
+          }
+          if (date < today) {
+            cell.classList.add("disabled");
+          } else {
+            cell.addEventListener("click", selectDateCell);
+          }
+          row.appendChild(cell);
+          date.setDate(date.getDate() + 1);
+          cellCount++;
+
+          if (cellCount % 7 === 0) {
+            calendarBody.appendChild(row);
+            row = document.createElement("tr");
+          }
+        }
+
+        if (cellCount % 7 !== 0) {
+          var remainingDays = 7 - (cellCount % 7);
+          for (var i = 0; i < remainingDays; i++) {
+            var emptyCell = document.createElement("td");
+            emptyCell.classList.add("disabled");
+            row.appendChild(emptyCell);
+          }
+          calendarBody.appendChild(row);
+        }
+      }
+
+      function updateDateTime() {
+        var currentDateTime = document.getElementById("currentDateTime");
+        currentDateTime.textContent = getCurrentDateTime();
+      }
+
+      function selectDateCell(event) {
+        var selectedDate = event.target.textContent;
+        var cells = document.getElementsByTagName("td");
+        if (selectedDateCell !== null) {
+          selectedDateCell.classList.remove("selected");
+        }
+
+        selectedDateCell = event.target;
+        selectedDateCell.classList.add("selected");
+        document.getElementById("selectDateButton").disabled = false;
+        updateReserveButton();
+
+        var timeSelect = document.getElementById("time");
+        var availableTimes = getAvailableTimes(selectedDate);
+
+        timeSelect.innerHTML =
+          '<option value="" selected disabled>Seleccione una hora</option>';
+
+        for (var i = 0; i < availableTimes.length; i++) {
+          var option = document.createElement("option");
+          option.value = availableTimes[i];
+          option.text = availableTimes[i];
+          timeSelect.appendChild(option);
+        }
+      }
+
+      function selectTime(event) {
+        selectedTime = event.target.value;
+        updateReserveButton();
+      }
+
+      function updateReserveButton() {
+        var reserveButton = document.getElementById("reserveButton");
+        var selectedName = document.getElementById("name").value.trim();
+        var selectedPhone = document.getElementById("phone").value.trim();
+        var selectedEmail = document.getElementById("email").value.trim();
+
+        if (
+          selectedDateCell !== null &&
+          selectedTime !== null &&
+          selectedName !== "" &&
+          selectedPhone !== "" &&
+          selectedEmail !== ""
+        ) {
+          reserveButton.disabled = false;
+        } else {
+          reserveButton.disabled = true;
+        }
+      }
+
+      function saveReservation() {
+        var name = document.getElementById("name").value;
+        var dateTime = selectedDateCell.textContent + " " + selectedTime;
+
+        if (reservedTimes.includes(dateTime)) {
+          alert(
+            "Este horario ya ha sido reservado. Por favor, seleccione otro horario."
+          );
+          return;
+        }
+
+        var reservation = {
+          name: name,
+          dateTime: dateTime,
+        };
+
+        var reservationList = [];
+        var storedReservationList = localStorage.getItem("reservationList");
+        if (storedReservationList) {
+          reservationList = JSON.parse(storedReservationList);
+        }
+        reservationList.push(reservation);
+        localStorage.setItem("reservationList", JSON.stringify(reservationList));
+
+        reservedTimes.push(dateTime);
+
+        alert("Reserva realizada con éxito");
+      }
+
+      function getAvailableTimes(selectedDate) {
+        var availableTimes = [];
+        if (selectedDate === "1") {
+          availableTimes = ["09:00 AM", "10:00 AM", "11:00 AM"];
+        } else if (selectedDate === "2") {
+          availableTimes = ["02:00 PM", "03:00 PM", "04:00 PM"];
+        } else {
+          availableTimes = ["08:00 AM", "01:00 PM", "05:00 PM"];
+        }
+
+        return availableTimes;
+      }
+
+      createCalendar();
+      updateDateTime();
+
+      var nameInput = document.getElementById("name");
+      var phoneInput = document.getElementById("phone");
+      var emailInput = document.getElementById("email");
+      var timeSelect = document.getElementById("time");
+      var selectDateButton = document.getElementById("selectDateButton");
+      var saveReservationButton = document.getElementById("reserveButton");
+
+      var cells = document.getElementsByTagName("td");
+      for (var i = 0; i < cells.length; i++) {
+        if (!cells[i].classList.contains("disabled")) {
+          cells[i].addEventListener("click", selectDateCell);
+        }
+      }
+
+      timeSelect.addEventListener("change", selectTime);
+
+      selectDateButton.addEventListener("click", function () {
+        selectDateButton.disabled = true;
+        timeSelect.disabled = false;
+        updateReserveButton();
+      });
+
+      saveReservationButton.addEventListener("click", saveReservation);
+    </script>
+  </body>
 </html>
+
+
