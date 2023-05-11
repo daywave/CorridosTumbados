@@ -1,1 +1,35 @@
-<p>NOSOTROS WORKS</p>
+<script>
+    function printReservationReport() {
+var reservationList = localStorage.getItem("reservationList");
+if (!reservationList) {
+  document.write("No hay reservaciones almacenadas.");
+  return;
+}
+
+reservationList = JSON.parse(reservationList);
+
+var reportDiv = document.createElement("div");
+reportDiv.innerHTML = "<h3>Reporte de Reservaciones</h3>";
+
+for (var i = 0; i < reservationList.length; i++) {
+  var reservation = reservationList[i];
+  var reservationInfo = document.createElement("p");
+  reservationInfo.innerHTML =
+    "<strong>Reservación #" +
+    (i + 1) +
+    "</strong><br>" +
+    "Nombre: " +
+    reservation.name +
+    "<br>" +
+    "Fecha y Hora: " +
+    reservation.dateTime +
+    "<br><br>";
+  reportDiv.appendChild(reservationInfo);
+}
+
+document.body.appendChild(reportDiv);
+}
+
+printReservationReport();
+
+  </script>
