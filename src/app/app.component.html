@@ -3,14 +3,17 @@
     body {
       margin: 0;
     }
+
     nav {
       width: 100%;
       height: 120px;
     }
+
     ul {
       margin: 0;
       padding: 0;
     }
+
     li {
       float: left;
       margin: 0;
@@ -21,33 +24,38 @@
       list-style: none;
       text-align: center;
     }
+
     a {
       color: rgb(222, 170, 170);
       text-decoration: none;
     }
+
     img {
       width: 40%;
-      
+
     }
+
     #image {
       width: 24%;
     }
+
     #blankSpace {
       width: 16%;
       height: 34px;
     }
   </style>
   <!--  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 </head>
 
 
 <nav style="background-color: rgba(192, 76, 76, 0.049);">
   <ul>
     <li id="image">
-      <img
-        src="../assets/IMG_0848.jpg"
-        alt=""
-      />
+      <img src="../assets/IMG_0848.jpg" alt="" />
       <br><br>
     </li>
     <li><a class="button" routerLink="/agendar" routerLinkActive="activebutton" href="">Sobre Nosotros</a></li>
@@ -56,9 +64,9 @@
     <li id="blankSpace"><a href=""></a></li>
     <li><a class="button" routerLink="/agendar" routerLinkActive="activebutton" href="">Mision</a></li>
     <li><a class="button" routerLink="/agendar" routerLinkActive="activebutton" href="">Galeria</a></li>
-    
+
   </ul>
-</nav><hr> <br><br>
+</nav>
+<hr> <br><br>
 <app-mapa></app-mapa>
 <router-outlet></router-outlet>
-
